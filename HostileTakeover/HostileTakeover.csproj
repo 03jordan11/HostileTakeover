@@ -44,10 +44,12 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entity.cs" />
     <Compile Include="GameObject.cs" />
+    <Compile Include="Keyboard.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="Window.cs">
@@ -64,9 +66,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Window.resx">
-      <DependentUpon>Window.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

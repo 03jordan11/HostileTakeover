@@ -13,6 +13,8 @@ namespace HostileTakeover {
     public partial class Window : Form {
 
         public Window(Size resolution) {
+            // Disable layouts
+            SuspendLayout();
 
             // Enable double buffering
             this.DoubleBuffered = true;
@@ -28,11 +30,19 @@ namespace HostileTakeover {
             // Center Window
             this.StartPosition = FormStartPosition.CenterScreen;
 
+            // Allows component to get key events before being passed to focused component
+            this.KeyPreview = true;
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.KeyPress);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.KeyRelease);
+
             // Set window title
             this.Text = "Hostile Takeover";
 
             // Set the component name
             this.Name = "Window";
+
+            // Not working
+            this.Focus();
 
             // Commenting this function out disables the designer
             // InitializeComponent();
@@ -64,10 +74,16 @@ namespace HostileTakeover {
 
         }
 
-        private void Window_Load(object sender, EventArgs e)
-        {
+        private void Window_Load(object sender, EventArgs e) {}
 
+        private void KeyPress(Object sender, KeyEventArgs e) {
+            HostileTakeover.Keyboard.setKey(e.KeyCode, true);
         }
+
+        private void KeyRelease(Object sender, KeyEventArgs e) {
+            HostileTakeover.Keyboard.setKey(e.KeyCode, false);
+        }
+
     }
 
 }

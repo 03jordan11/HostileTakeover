@@ -5,15 +5,20 @@ namespace HostileTakeover {
 
     class Entity : GameObject {
 
-        public Sprite Sprite { get; private set; }
+        public Sprite Sprite { get; set; }
         public Position Pos { get; set; }
+
+        public Entity() {
+            Pos = new Position();
+        }
 
         public void Tick() {
             Sprite.NextFrame();
         }
 
         public void Render(Graphics g) {
-            g.DrawImage(Sprite.CurrentImage(), (int) Pos.X, (int) Pos.Y);
+            System.Console.WriteLine(Sprite.CurrentFrame);
+            g.DrawImageUnscaled(Sprite.CurrentImage(), (int) Pos.X, (int) Pos.Y);
         }
 
     }
