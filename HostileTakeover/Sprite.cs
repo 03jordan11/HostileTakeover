@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace HostileTakeover
 {
-    class Sprite {
+    public class Sprite {
 
         public Boolean Animated { get; private set; }
         public int Frames { get; private set; }
@@ -19,6 +19,7 @@ namespace HostileTakeover
         }
 
         public Sprite(Image Image) {
+            this.Images = new List<Image>();
             this.Images.Add(Image);
             this.Animated = false;
             this.Frames = 1;
@@ -27,7 +28,7 @@ namespace HostileTakeover
 
         public void NextFrame() {
             if (!Animated) return;
-
+            
             if (CurrentFrame + 1 < Frames)
                 ++CurrentFrame;
             else

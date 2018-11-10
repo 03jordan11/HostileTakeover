@@ -6,7 +6,7 @@ using System.Drawing;
 namespace HostileTakeover {
 
     static class HostileTakeover {
-
+         
         public static Bitmap Canvas;
 
         public static List<GameObject> GameObjects;
@@ -21,7 +21,7 @@ namespace HostileTakeover {
 
         private static Graphics g;
 
-        public static Entity entity;
+        public static Player player;
 
         /// <summary>
         /// The main entry point for the application.
@@ -45,17 +45,51 @@ namespace HostileTakeover {
             // Create the window
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            HostileTakeover.Window = new Window(Resolution);
+            Window = new Window(Resolution);
+
+            Image grassImage = Image.FromFile("assets/sprites/characterModels/64x64_grass.png");
             
+           
+            for(int i = 0; i < 100; i++)
+            {
+                for (int j = 0; j < 100; j++)
+                {
+                    GameObjects.Add(new Entity
+                    {
+                        Pos = new Position
+                        {
+                            X = i*64,
+                            Y = j*64
+                        },
+                        Sprite = new Sprite(grassImage)
+                    });
+                }
+
+            }
+
             // load in sprites images and add a sprite
-            Image i1 = Image.FromFile("32 x 32 platform character_idle_0.png");
-            Image i2 = Image.FromFile("32 x 32 platform character_idle_1.png");
-            Image i3 = Image.FromFile("32 x 32 platform character_idle_2.png");
-            Image i4 = Image.FromFile("32 x 32 platform character_idle_3.png");
+            Image i1 = Image.FromFile("assets/sprites/characterModels/32_x_32_platform_character_idle_0.png");
+            Image i2 = Image.FromFile("assets/sprites/characterModels/32_x_32_platform_character_idle_1.png");
+            Image i3 = Image.FromFile("assets/sprites/characterModels/32_x_32_platform_character_idle_2.png");
+            Image i4 = Image.FromFile("assets/sprites/characterModels/32_x_32_platform_character_idle_3.png");
             List<Image> images = new List<Image>() { i1, i2, i3, i4};
-            entity = new Entity();
-            entity.Sprite = new Sprite(images);
+            var entity = new Entity
+            {
+                Sprite = new Sprite(images)
+            };
             GameObjects.Add(entity);
+
+            Image test = Image.FromFile("assets/sprites/characterModels/player.png");
+            player = (new Player
+            {
+                Pos = new Position
+                {
+                    X = 100,
+                    Y = 100
+                },
+                Sprite = new Sprite(test)
+            });
+            GameObjects.Add(player);
 
             // Begin Execution
             Timer.Start();
@@ -65,16 +99,16 @@ namespace HostileTakeover {
 
         static void Tick(Object Sender, EventArgs e) {
             if (Keyboard.isDown(Keys.W))
-                entity.Pos.Y -= 1;
+                player.Pos.Y -= 1;
             if (Keyboard.isDown(Keys.A))
-                entity.Pos.X -= 1;
+                player.Pos.X -= 1;
             if (Keyboard.isDown(Keys.S))
-                entity.Pos.Y += 1;
+                player.Pos.Y += 1;
             if (Keyboard.isDown(Keys.D))
-                entity.Pos.X += 1;
+                player.Pos.X += 1;
+            g.Clear(Color.Empty); // Empty the frame
             foreach (GameObject go in GameObjects) {
                 go.Tick();
-                g.Clear(Color.Empty); // Empty the frame
                 go.Render(g);
             }
             Window.Refresh();

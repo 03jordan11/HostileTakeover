@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace HostileTakeover
+{
 
-namespace HostileTakeover {
+    public class Position {
+        #region contsructors
+        public Position()
+        {
 
-    class Position {
-
+        }
+        #endregion
+        #region Attributes
         public float X { get; set; }
         public float Y { get; set; }
         public float Z { get; set; }
-        
-        public Position() {
+        #endregion
 
-        }
+
 
     }
 

@@ -3,8 +3,9 @@ using System.Drawing;
 
 namespace HostileTakeover {
 
-    class Entity : GameObject {
+    public class Entity : GameObject {
 
+        public static int FrameTime;
         public Sprite Sprite { get; set; }
         public Position Pos { get; set; }
 
@@ -17,6 +18,7 @@ namespace HostileTakeover {
         }
 
         public void Render(Graphics g) {
+            //debug
             System.Console.WriteLine(Sprite.CurrentFrame);
             g.DrawImageUnscaled(Sprite.CurrentImage(), (int) Pos.X, (int) Pos.Y);
         }

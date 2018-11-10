@@ -50,6 +50,7 @@
     <Compile Include="Entity.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="Keyboard.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Sprite.cs" />
     <Compile Include="Window.cs">
@@ -78,6 +79,29 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\sprites\characterModels\32_x_32_platform_character_idle_0.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\sprites\characterModels\32_x_32_platform_character_idle_1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\sprites\characterModels\32_x_32_platform_character_idle_2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\sprites\characterModels\32_x_32_platform_character_idle_3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\sprites\characterModels\64x64_grass.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\sprites\characterModels\player.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="assets\audio\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
