@@ -33,6 +33,8 @@ namespace HostileTakeover {
 
         public Boolean Running { get; private set; }
 
+        private int fps;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -116,7 +118,6 @@ namespace HostileTakeover {
             GraphicsThread.Start();
             Running = true;
             long lastSecond = 0;
-            int fps = 0;
             int frames = 0;
             while (Running && Window.Running) {
                 Tick();
@@ -126,7 +127,6 @@ namespace HostileTakeover {
                     lastSecond = StopWatch.ElapsedMilliseconds;
                     fps = frames;
                     frames = 0;
-                    Console.WriteLine("FPS: " + fps);
                 }
             }
         }
@@ -155,6 +155,8 @@ namespace HostileTakeover {
             foreach (GameObject go in GameObjects) {
                 go.Render(g);
             }
+            Brush b = new SolidBrush(Color.White);
+            g.DrawString("" + fps, SystemFonts.DefaultFont, b, 0, 0);
             // Remove this when fixed
             try {
                 Window.Invoke(new Action(() => { Window.Refresh(); }));
