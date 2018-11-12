@@ -6,7 +6,7 @@ namespace HostileTakeover {
     /// <summary>
     /// A GameObject is simply something that can be updated or rendered from within the game loop.
     /// </summary>
-    interface GameObject {
+    public interface GameObject {
 
         void Render(Graphics g);
         void Tick();

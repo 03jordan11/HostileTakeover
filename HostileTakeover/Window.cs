@@ -12,9 +12,19 @@ namespace HostileTakeover {
     
     public partial class Window : Form {
 
-        public Window(Size resolution) {
+        public Keyboard Keyboard { get; }
+        public Bitmap Canvas { get; private set; }
+        public Graphics g { get; private set; }
+        public bool Running { get; private set; }
+
+        public Window(Size resolution, Keyboard keyboard) {
             // Disable layouts
             SuspendLayout();
+
+            Running = true;
+            this.Keyboard = keyboard;
+            this.Size = resolution;
+            CreateCanvas();
 
             // Enable double buffering
             this.DoubleBuffered = true;
@@ -53,12 +63,24 @@ namespace HostileTakeover {
         /// </summary>
         /// <param name="e"></param>
         protected override void OnPaint(PaintEventArgs e) {
-            e.Graphics.DrawImageUnscaled(HostileTakeover.Canvas, 0, 0);
+            e.Graphics.DrawImageUnscaled(Canvas, 0, 0);
+
+            Brush b = new SolidBrush(Color.Red);
+            //e.Graphics.FillRectangle(b, 0, 0, 100, 100);
         }
 
 
         protected override void OnResize(EventArgs e) {
-            HostileTakeover.Resize(this.Size);
+            CreateCanvas();
+        }
+
+        private void CreateCanvas() {
+            if(g != null)
+                g.Dispose();
+            if (Canvas != null)
+                Canvas.Dispose();
+            Canvas = new Bitmap(Size.Width, Size.Height);
+            g = Graphics.FromImage(Canvas);
         }
 
         private void InitializeComponent()
@@ -77,17 +99,15 @@ namespace HostileTakeover {
         private void Window_Load(object sender, EventArgs e) {}
 
         private void KeyPress(Object sender, KeyEventArgs e) {
-            HostileTakeover.Keyboard.setKey(e.KeyCode, true);
+            Keyboard.setKey(e.KeyCode, true);
         }
 
         private void KeyRelease(Object sender, KeyEventArgs e) {
-            HostileTakeover.Keyboard.setKey(e.KeyCode, false);
+            Keyboard.setKey(e.KeyCode, false);
         }
 
-        protected override void OnClosed(EventArgs e)
-        {
-            base.OnClosed(e);
-            HostileTakeover.Stop();
+        protected override void OnClosed(EventArgs e) {
+            Running = false;
         }
 
     }

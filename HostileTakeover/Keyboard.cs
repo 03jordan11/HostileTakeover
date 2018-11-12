@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HostileTakeover {
 
-    class Keyboard {
+    public class Keyboard {
 
         private Dictionary<System.Windows.Forms.Keys, Boolean> keys;
 

@@ -1,37 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace HostileTakeover {
 
-    static class HostileTakeover {
-         
-        public static Bitmap Canvas;
+    public class HostileTakeover {
 
-        public static List<GameObject> GameObjects;
+        public static HostileTakeover Instance { get ; set; }
 
-        public static Size Resolution;
+        public Bitmap Canvas { get; }
 
-        private static System.Windows.Threading.DispatcherTimer Timer;
+        public List<GameObject> GameObjects { get; }
 
-        private static Window Window;
+        public Size Resolution { get { return Window.Size; } }
 
-        public static Keyboard Keyboard;
+        private Window Window;
 
-        private static Graphics g;
+        public Keyboard Keyboard { get; }
 
-        public static Player player;
+        private Graphics g { get { return Window.g; } }
+
+        public Player player;
+
+        public Stopwatch StopWatch { get; private set; }
+
+        private Thread GraphicsThread;
+
+        public Boolean Running { get; private set; }
 
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main() {
+            Instance = new HostileTakeover();
 
-
+            // testing serializable data
             Position z = new Position { X = 1, Y = 1, Z = 1 };
             BinaryFormatter bf = new BinaryFormatter();
             System.IO.Directory.CreateDirectory("save/levels/");
@@ -44,39 +53,15 @@ namespace HostileTakeover {
             Console.WriteLine(z.X + z.Y + z.Z);
             fs.Close();
 
-
-            // Init Stuff
-            Keyboard = new Keyboard();
-            GameObjects = new List<GameObject>();
-
-            // Set resolution and create canvas
-            Resolution = new Size(800, 600);
-            Canvas = new Bitmap(Resolution.Width, Resolution.Height);
-            Canvas.MakeTransparent();
-            g = Graphics.FromImage(Canvas);
-
-            Timer = new System.Windows.Threading.DispatcherTimer();
-            Timer.Interval = new TimeSpan(0, 0, 0, 0, 1000 / 60); // days, hours, minutes, seconds, milliseconds
-            Timer.Tick += new EventHandler(Tick);
-
-            // Create the window
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Window = new Window(Resolution);
-
             Image grassImage = Image.FromFile("assets/sprites/characterModels/64x64_grass.png");
-            
-           
-            for(int i = 0; i < 100; i++)
-            {
-                for (int j = 0; j < 100; j++)
-                {
-                    GameObjects.Add(new Entity
-                    {
-                        Pos = new Position
-                        {
-                            X = i*64,
-                            Y = j*64
+
+
+            for (int i = 0; i < 100; i++) {
+                for (int j = 0; j < 100; j++) {
+                    Instance.GameObjects.Add(new Entity {
+                        Pos = new Position {
+                            X = i * 64,
+                            Y = j * 64
                         },
                         Sprite = new Sprite(grassImage)
                     });
@@ -89,32 +74,69 @@ namespace HostileTakeover {
             Image i2 = Image.FromFile("assets/sprites/characterModels/32_x_32_platform_character_idle_1.png");
             Image i3 = Image.FromFile("assets/sprites/characterModels/32_x_32_platform_character_idle_2.png");
             Image i4 = Image.FromFile("assets/sprites/characterModels/32_x_32_platform_character_idle_3.png");
-            List<Image> images = new List<Image>() { i1, i2, i3, i4};
-            var entity = new Entity
-            {
-                Sprite = new Sprite(images)
+            List<Image> images = new List<Image>() { i1, i2, i3, i4 };
+            var entity = new Entity {
+                Sprite = new Sprite(images, new List<int>() { 1, 2, 3, 4 })
             };
-            GameObjects.Add(entity);
+            Instance.GameObjects.Add(entity);
 
-            Image test = Image.FromFile("assets/sprites/characterModels/player.png");
-            player = (new Player
-            {
-                Pos = new Position
-                {
+            Image test = Image.FromFile("assets/sprites/characterModels/david.png");
+            Instance.player = (new Player {
+                Pos = new Position {
                     X = 100,
                     Y = 100
                 },
-                Sprite = new Sprite(test)
+                Sprite = new Sprite(test, 0, 0, 64, 64, new List<int>() { 150, 150, 150, 150, 150 })
             });
-            GameObjects.Add(player);
+            Instance.GameObjects.Add(Instance.player);
 
-            // Begin Execution
-            Timer.Start();
-            Application.Run(Window);
+            Instance.Start();
+        }
+
+        public HostileTakeover() {
+            // Init Stuff
+            Keyboard = new Keyboard();
+            GameObjects = new List<GameObject>();
+            StopWatch = new Stopwatch();
+
+            // Create the window
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Window = new Window(new Size(800, 600), Keyboard);
 
         }
 
-        static void Tick(Object Sender, EventArgs e) {
+        private void RunGui() {
+            Application.Run(Window);
+        }
+
+        public void Start() {
+            StopWatch.Start();
+            GraphicsThread = new Thread(RunGui);
+            GraphicsThread.Start();
+            Running = true;
+            long lastSecond = 0;
+            int fps = 0;
+            int frames = 0;
+            while (Running && Window.Running) {
+                Tick();
+                Render();
+                ++frames;
+                if (StopWatch.ElapsedMilliseconds - lastSecond >= 1000) {
+                    lastSecond = StopWatch.ElapsedMilliseconds;
+                    fps = frames;
+                    frames = 0;
+                    Console.WriteLine("FPS: " + fps);
+                }
+            }
+        }
+
+        public void Stop() {
+            Window.Close();
+            Running = false;
+        }
+
+        private void Tick() {
             if (Keyboard.isDown(Keys.W))
                 player.Pos.Y -= 1;
             if (Keyboard.isDown(Keys.A))
@@ -123,34 +145,29 @@ namespace HostileTakeover {
                 player.Pos.Y += 1;
             if (Keyboard.isDown(Keys.D))
                 player.Pos.X += 1;
-            g.Clear(Color.Empty); // Empty the frame
             foreach (GameObject go in GameObjects) {
                 go.Tick();
+            }
+        }
+
+        private void Render() {
+            g.Clear(Color.Empty); // Empty the frame
+            foreach (GameObject go in GameObjects) {
                 go.Render(g);
             }
-            Window.Refresh();
+            // Remove this when fixed
+            try {
+                Window.Invoke(new Action(() => { Window.Refresh(); }));
+            } catch (Exception e) {
+            }
         }
-        public static void AddGameObject(bool isPlayer, Sprite sprite, float x = 0, float y = 0, float z = 0)
+
+        public void AddGameObject(bool isPlayer, Sprite sprite, float x = 0, float y = 0, float z = 0)
         {
             var model = isPlayer ? new Player() : new Entity();
             model.Sprite = sprite;
             model.Pos = new Position { X = x, Y = y, Z = z };
             GameObjects.Add(model);
-        }
-        public static void Resize(Size size) {
-            HostileTakeover.g.Dispose();
-            Canvas.Dispose();
-            HostileTakeover.Resolution = size;
-            Canvas = new Bitmap(Resolution.Width, Resolution.Height);
-            g = Graphics.FromImage(Canvas);
-        }
-
-        public static void Stop() {
-            Console.WriteLine("cleanup");
-            HostileTakeover.Timer.IsEnabled = false;
-            HostileTakeover.Timer.Stop();
-            HostileTakeover.g.Dispose();
-            Canvas.Dispose();
         }
 
     }
