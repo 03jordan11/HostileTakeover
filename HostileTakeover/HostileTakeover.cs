@@ -130,7 +130,13 @@ namespace HostileTakeover {
             }
             Window.Refresh();
         }
-
+        public static void AddGameObject(bool isPlayer, Sprite sprite, float x = 0, float y = 0, float z = 0)
+        {
+            var model = isPlayer ? new Player() : new Entity();
+            model.Sprite = sprite;
+            model.Pos = new Position { X = x, Y = y, Z = z };
+            GameObjects.Add(model);
+        }
         public static void Resize(Size size) {
             HostileTakeover.g.Dispose();
             Canvas.Dispose();
