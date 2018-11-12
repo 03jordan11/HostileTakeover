@@ -1,13 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 
-namespace HostileTakeover
-{
-    public class Player : Entity 
+namespace HostileTakeover {
+
+    [Serializable()]
+    public class Player : Entity, ISerializable
     {
-
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            throw new NotImplementedException();
+        }
     }
+
 }

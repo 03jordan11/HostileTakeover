@@ -58,7 +58,7 @@ namespace HostileTakeover {
 
 
         protected override void OnResize(EventArgs e) {
-            HostileTakeover.Resolution = this.Size;
+            HostileTakeover.Resize(this.Size);
         }
 
         private void InitializeComponent()
@@ -82,6 +82,12 @@ namespace HostileTakeover {
 
         private void KeyRelease(Object sender, KeyEventArgs e) {
             HostileTakeover.Keyboard.setKey(e.KeyCode, false);
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            HostileTakeover.Stop();
         }
 
     }

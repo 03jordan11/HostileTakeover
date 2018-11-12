@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace HostileTakeover {
 
@@ -28,6 +30,21 @@ namespace HostileTakeover {
         /// </summary>
         [STAThread]
         static void Main() {
+
+
+            Position z = new Position { X = 1, Y = 1, Z = 1 };
+            BinaryFormatter bf = new BinaryFormatter();
+            System.IO.Directory.CreateDirectory("save/levels/");
+            FileStream fs = File.Open("save/levels/pos", FileMode.Create);
+            bf.Serialize(fs, z);
+            fs.Close();
+            fs = File.Open("save/levels/pos", FileMode.Open);
+            z = null;
+            z = (Position)bf.Deserialize(fs);
+            Console.WriteLine(z.X + z.Y + z.Z);
+            fs.Close();
+
+
             // Init Stuff
             Keyboard = new Keyboard();
             GameObjects = new List<GameObject>();
@@ -112,6 +129,22 @@ namespace HostileTakeover {
                 go.Render(g);
             }
             Window.Refresh();
+        }
+
+        public static void Resize(Size size) {
+            HostileTakeover.g.Dispose();
+            Canvas.Dispose();
+            HostileTakeover.Resolution = size;
+            Canvas = new Bitmap(Resolution.Width, Resolution.Height);
+            g = Graphics.FromImage(Canvas);
+        }
+
+        public static void Stop() {
+            Console.WriteLine("cleanup");
+            HostileTakeover.Timer.IsEnabled = false;
+            HostileTakeover.Timer.Stop();
+            HostileTakeover.g.Dispose();
+            Canvas.Dispose();
         }
 
     }

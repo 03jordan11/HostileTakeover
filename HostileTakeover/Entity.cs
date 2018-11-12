@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Drawing;
+using System.Runtime.Serialization;
 
 namespace HostileTakeover {
 
-    public class Entity : GameObject {
+    [Serializable()]
+    public class Entity : GameObject, ISerializable {
 
-        public static int FrameTime;
         public Sprite Sprite { get; set; }
         public Position Pos { get; set; }
 
@@ -18,11 +19,12 @@ namespace HostileTakeover {
         }
 
         public void Render(Graphics g) {
-            //debug
-            System.Console.WriteLine(Sprite.CurrentFrame);
             g.DrawImageUnscaled(Sprite.CurrentImage(), (int) Pos.X, (int) Pos.Y);
         }
 
+        public void GetObjectData(SerializationInfo info, StreamingContext context) {
+            info.AddValue("Pos", Pos);
+        }
     }
 
 }
